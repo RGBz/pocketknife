@@ -154,7 +154,7 @@ $ ./yaml2json.sh sample.yaml > sample.json
 ```
 
 ## Installation
-`pk` is written in Rust. 
+`pk` is written in Rust and needs to be compiled locally at this time. 
 
 1. Install Rust from https://www.rust-lang.org/ if you don't have it already.
 2. Clone this repo locally.
