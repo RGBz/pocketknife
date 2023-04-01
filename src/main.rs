@@ -19,7 +19,7 @@ fn main() {
 
     // The first argument is always the prompt
     let prompt = &args[1];
-    let mut input = format!("{}", prompt);
+    let mut input = format!("Please output without extra explanation {}", prompt);
 
     // If there's a file argument, update the input
     if args.len() > 2 {
@@ -81,8 +81,8 @@ fn chat_gpt_api(content: String) -> String {
             ]
         }))
         .send()
-        .unwrap_or_else(|_| {
-            eprintln!("Error: could not send request to ChatGPT API");
+        .unwrap_or_else(|error| {
+            eprintln!("Error: could not send request to ChatGPT API\n  {}", error);
             std::process::exit(1);
         });
 

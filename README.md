@@ -29,7 +29,7 @@ Let's say we have a `test.json` file like so:
 ```
 We can use `pk` to convert it to YAML
 ```bash
-$ pk "Convert from JSON to YAML" test.json > test.yaml
+$ pk "json to yaml" test.json > test.yaml
 $ cat test.yaml
 birds: 22
 dogs:
@@ -37,7 +37,7 @@ dogs:
 ```
 Or maybe you just want to capitalize all the strings in the JSON file in place for some weird reason?
 ```bash
-$ pk "Capitalize everything!" test.json -i
+$ pk "capitalize everything" test.json -i
 $ cat test.json
 {
   "BIRDS": 22,
@@ -60,8 +60,8 @@ Simply send a prompt from the command line to get a response sent to stdout.
 
 #### Example:
 ```bash
-$ pk "UNIX command for listing files"
-ls
+$ pk "unix command for finding files with the word 'bird' in them"
+grep -r "bird" .
 ```
 ### 2. Create code or text files
 Prompt ChatGPT to create the contents of a file.
@@ -71,14 +71,18 @@ Prompt ChatGPT to create the contents of a file.
 
 #### Example:
 ```bash
-$ pk "basic HTML file skeleton" > index.html
+$ pk "html file skeleton" > index.html
 $ cat index.html
 <!DOCTYPE html>
-<html>
-  <head>
-  </head>
-  <body>
-  </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+</body>
 </html>
 ```
 
@@ -90,7 +94,7 @@ Have ChatGPT process a file based on a prompt and send the results to stdout.
 
 #### Example:
 ```bash
-$ pk "Convert YAML to JSON" test.yaml 
+$ pk "yaml to json" test.yaml 
 {
   "birds": 22,
   "dogs": [
@@ -112,7 +116,7 @@ Have ChatGPT process a file based on a prompt and send the results to another fi
 
 #### Example:
 ```bash
-$ pk "Convert YAML to JSON" test.yaml > test.json
+$ pk "yaml to json" test.yaml > test.json
 ```
 
 ### 5. Refactor a file in place
@@ -125,7 +129,7 @@ Have ChatGPT process a file based on a prompt and overwrite the file with the re
 
 #### Example:
 ```bash
-$ pk "Convert all periods to dollar signs" test.txt -i
+$ pk "all periods to dollar signs" test.txt -i
 ```
 
 ### 6. Create a script for a common prompt
@@ -142,7 +146,7 @@ if [ -z "$1" ]; then
 fi
 
 # Use the FILE parameter with the pk command
-pk "Convert YAML to JSON" "$1" 
+pk "convert yaml to json" "$1" 
 ```
 Then use it and send stdout to another file:
 ```bash
