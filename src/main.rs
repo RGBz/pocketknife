@@ -6,10 +6,6 @@ use std::io::Read;
 use std::io::Write;
 
 fn main() {
-    // Support tweak FILE PROMPT -i
-    // Support tweak FILE PROMPT
-    // Support tweak -i FILE PROMPT
-    
     // Get the command-line arguments
     let args: Vec<String> = std::env::args().collect();
     if args.len() < 3 || args.len() > 4 {
