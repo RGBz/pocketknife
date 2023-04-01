@@ -188,6 +188,7 @@ $ ./yaml2json.sh sample.yaml > sample.json
 5. Run the `pk` binary using the use cases and examples above for guidance.
 
 ## Limitations & Considerations
+* Any file you list after the prompt will be sent to the ChatGPT API over HTTPS. Do not send files you are not comfortable with sharing with OpenAI.
 * ChatGPT is not good with counting or math in general. Asking it how many bytes are in a file or how many lines, or to run a total in a CSV will likely give inaccurate results.
 * ChatGPT is however great with text and code! You can use `pk` to create a script to sum the results of a CSV and give it the CSV, then run the script.
 * ChatGPT is not perfect! Always review any code it writes before running it and review any output it generates before trusting it. It's a great tool to speed you up, but you need to be the expert.
