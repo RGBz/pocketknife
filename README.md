@@ -1,5 +1,7 @@
 # 🤏 tweak
-Process local files using ChatGPT-4.
+Process local files using ChatGPT 4.
+
+ChatGPT 4 is an incredibly powerful tool for processing data. `tweak` is a CLI tool to use ChatGPT 4 to execute a prompt against the contents of a local file to do things like generate results or refactor a file in place (using the `-i` flag).
 
 ## How it works
 Imagine you have a `test.json` file...
