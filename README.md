@@ -1,8 +1,6 @@
 # 🇨🇭 pocketknife (`pk`)
 The `pk` command is an AI powered multitool.
 
-It gives you direct CLI access to query ChatGPT 4 or to use it to create, refactor or process text-based files.
-
 ## Sample Use Cases
 Come up with the right CLI command to do something, e.g.:
 ```bash
@@ -11,14 +9,20 @@ pk "unix command to find all files with the word 'bird' in it"
 Create code or text files from prompts, e.g.: 
 ```bash
 pk "html file skeleton" > index.html
+pk "js file to start an express server on port 8080" > server.js
+pk "css file that animates buttons fading out on press" > bye-bye-button.css
 ```
 Convert text-based files to other formats, e.g.: 
 ```bash
 pk "json to yaml" test.json > test.yaml
+pk "rust to zig" src/main.rs > main.z
+pk "csv to json" results.csv > results.json
+pk "mocha to jest" mocha-test.js > jest.test.js
 ```
 Refactor code in place, e.g.: 
 ```bash
 pk "collapse to one line" test.json -i
+pk "add jsdoc comments" complex-code.js -i
 ```
 Rewrite text to sound smarter, e.g.: 
 ```bash
@@ -27,6 +31,7 @@ pk "use more impressive vocabulary" commencement-speech.txt
 Query ChatGPT 4 directly, e.g.: 
 ```bash
 pk "what does aux do to ps?"
+pk "write a song about writing a README"
 ```
 Create scripts to build your own tools (see use case example below).
 
