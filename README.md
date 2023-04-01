@@ -1,5 +1,5 @@
 # 🇨🇭 pocketknife (`pk`)
-The `pk` command is an AI powered multitool.
+The `pk` command is an AI powered multitool that leverages [ChatGPT 4](https://openai.com/product/gpt-4).
 
 ## Sample Use Cases
 Come up with the right CLI command to do something, e.g.:
