@@ -1,9 +1,9 @@
 # 🇨🇭 pocketknife (`pk`)
-The AI powered CLI multitool.
+The `pk` command is an AI powered multitool.
 
-Use ChatGPT 4 on the command line to create, refactor or process text-based files.
+It gives you direct CLI access to query ChatGPT 4 or to use it to create, refactor or process text-based files.
 
-## Use cases
+## Sample Use Cases
 Come up with the right CLI command to do something, e.g.:
 ```bash
 pk "unix command to find all files with the word 'bird' in it"
@@ -70,7 +70,7 @@ $ cat test.json
 ```
 The point is, `pk` is an amazingly powerful multitool that you can use for almost anything you can think of in regard to processing text.
 
-## Common Use Cases
+## Usage Patterns
 
 ### 1. Query ChatGPT 4 directly
 Simply send a prompt from the command line to get a response sent to stdout.
@@ -166,7 +166,7 @@ if [ -z "$1" ]; then
 fi
 
 # Use the FILE parameter with the pk command
-pk "convert yaml to json" "$1" 
+pk "yaml to json" "$1" 
 ```
 Then use it and send stdout to another file:
 ```bash
@@ -174,7 +174,7 @@ $ ./yaml2json.sh sample.yaml > sample.json
 ```
 
 ## Installation
-`pk` is written in Rust and needs to be compiled locally at this time. 
+`pk` is written in Rust and needs to be compiled locally at this time (downloadable binaries coming soon!). 
 
 1. Install Rust from https://www.rust-lang.org/ if you don't have it already.
 2. Clone this repo locally.
