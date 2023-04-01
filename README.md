@@ -161,5 +161,6 @@ $ ./yaml2json.sh sample.yaml > sample.json
 
 ## Troubleshooting
 If you're getting an error...
-* Make sure you set your OpenAI API key to the `OPENAI_API_KEY` environment variable
-* `pk` uses GPT 4, make sure your account has access to it (or get on the waitlist!)
+* Make sure you've set your OpenAI API key to the `OPENAI_API_KEY` environment variable.
+* `pk` uses GPT 4, make sure your account has access to it (or get on the waitlist!).
+* Make sure you have an Internet connection! `pk` hits the ChatGPT API directly for each command.
