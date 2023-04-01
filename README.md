@@ -7,12 +7,16 @@ Use ChatGPT 4 on the command line to create, refactor or process text-based file
 - Create code or text files from prompts
 - Convert text-based files to other formats (e.g. JSON to YAML)
 - Refactor code in place
-- Create scripts to build your own tools!
+- Create scripts to build your own tools
 - Rewrite text to sound smarter
-- Or just query ChatGPT 4 directly
+- Query ChatGPT 4 directly
+- Something I haven't thought of...
 
-## How it works
-Imagine you have a `test.json` file...
+## For example...
+`pk` 
+Imagine you have a JSON file you want to convert to YAML. You could download a special tool for it. Or you can use `pk`!
+
+Let's say we have a `test.json` file like so:
 ```json
 {
   "birds": 22,
@@ -23,7 +27,7 @@ Imagine you have a `test.json` file...
   ]
 }
 ```
-...and you want to convert it to YAML...
+We can use `pk` to convert it to YAML
 ```bash
 $ pk "Convert from JSON to YAML" test.json > test.yaml
 $ cat test.yaml
@@ -31,7 +35,7 @@ birds: 22
 dogs:
   - owls: lie
 ```
-Or you want to capitalize all the keys and modify the file in place!
+Or maybe you just want to capitalize all the strings in the JSON file in place for some weird reason?
 ```bash
 $ pk "Capitalize everything!" test.json -i
 $ cat test.json
@@ -44,19 +48,9 @@ $ cat test.json
   ]
 }
 ```
-`pk` is an amazingly powerful multitool at your fingertips.
+The point is, `pk` is an amazingly powerful multitool that you can use for almost anything you can think of in regard to processing text.
 
-## Installation
-`pk` is written in Rust. 
-
-1. Install Rust from https://www.rust-lang.org/ if you don't have it already
-2. Clone this repo locally
-3. Grab your OpenAI API key and set the `OPENAI_API_KEY` environment variable with it
-4. Run `cargo build --release` to compile the release binary to `target/release/pk`
-5. Move the binary to wherever you like and add it to your `PATH`
-5. Run the binary using the instructions below
-
-## Usage
+## Common Use Cases
 
 ### 1. Query ChatGPT 4 directly
 Simply send a prompt from the command line to get a response sent to stdout.
@@ -154,6 +148,16 @@ Then use it and send stdout to another file:
 ```bash
 $ ./yaml2json.sh sample.yaml > sample.json
 ```
+
+## Installation
+`pk` is written in Rust. 
+
+1. Install Rust from https://www.rust-lang.org/ if you don't have it already
+2. Clone this repo locally
+3. Grab your OpenAI API key and set the `OPENAI_API_KEY` environment variable with it
+4. Run `cargo build --release` to compile the release binary to `target/release/pk`
+5. Move the binary to wherever you like and add it to your `PATH`
+5. Run the binary using the instructions below
 
 ## Troubleshooting
 If you're getting an error...
