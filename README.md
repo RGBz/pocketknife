@@ -1,5 +1,5 @@
 # tweak
-Process local files using ChatGPT.
+Process local files using ChatGPT-4.
 
 ## How it works
 Imagine you have a `test.json` file...
@@ -70,3 +70,8 @@ Have ChatGPT process a file based on a prompt and overwrite the file with the re
 ```bash
 tweak -i test.txt "Convert all periods to dollar signs"
 ```
+
+## Troubleshooting
+If you're getting an error...
+* Make sure you set the `OPENAI_API_KEY` in your `PATH`
+* `tweak` uses GPT-4, make sure you have access to it or get on the waitlist
