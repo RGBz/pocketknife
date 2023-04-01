@@ -12,13 +12,17 @@ fn main() {
         eprintln!("Usage: pk PROMPT [FILE [-i]]");
         std::process::exit(1);
     }
+    if args.len() == 4 && args[3] != "-i" {
+        eprintln!("Error: expected -i, got '{}'", &args[3]);
+        std::process::exit(1);
+    }
 
-    // Concatenate the prompt and the file contents
+    // The first argument is always the prompt
     let prompt = &args[1];
     let mut input = format!("{}", prompt);
 
-    // If there's a file argument
-    if args.len() > 3 {
+    // If there's a file argument, update the input
+    if args.len() > 2 {
         // Read the file
         let filename = &args[2];
         let mut file = File::open(filename).unwrap_or_else(|_| {
@@ -36,8 +40,8 @@ fn main() {
     // Send the input to the ChatGPT API and print the response to stdout
     let response = chat_gpt_api(input);
 
-    // If a -i flag was providded, overwrite the file with the new contents
-    if args.len() == 4 && args[3] == "-i" {
+    // If a -i flag was provided, overwrite the file with the new contents
+    if args.len() == 4 {
         let filename = &args[2];
         let mut file = File::create(filename).unwrap_or_else(|_| {
             eprintln!("Error: could not open file '{}'", filename);
