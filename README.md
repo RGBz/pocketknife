@@ -156,12 +156,12 @@ $ ./yaml2json.sh sample.yaml > sample.json
 ## Installation
 `pk` is written in Rust. 
 
-1. Install Rust from https://www.rust-lang.org/ if you don't have it already
-2. Clone this repo locally
-3. Grab your OpenAI API key and set the `OPENAI_API_KEY` environment variable with it
-4. Run `cargo build --release` to compile the release binary to `target/release/pk`
-5. Move the binary to wherever you like and add it to your `PATH`
-5. Run the binary using the instructions below
+1. Install Rust from https://www.rust-lang.org/ if you don't have it already.
+2. Clone this repo locally.
+3. Grab your OpenAI API key and set the `OPENAI_API_KEY` environment variable with it.
+4. Run `cargo build --release` to compile the release binary to `target/release/pk`.
+5. Move the binary to wherever you like and add it to your `PATH`.
+5. Run the `pk` binary using the use cases and examples above for guidance.
 
 ## Limitations & Considerations
 * ChatGPT is not good with counting or math in general. Asking it how many bytes are in a file or how many lines, or to run a total in a CSV will likely give inaccurate results.
