@@ -1,4 +1,4 @@
-# tweak
+# 🤏 tweak
 Process local files using ChatGPT-4.
 
 ## How it works
