@@ -33,7 +33,7 @@ $ pk "Convert from JSON to YAML" test.json > test.yaml
 $ cat test.yaml
 birds: 22
 dogs:
-  - owls: lie
+  - owls: lies!
 ```
 Or maybe you just want to capitalize all the strings in the JSON file in place for some weird reason?
 ```bash
