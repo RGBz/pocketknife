@@ -4,15 +4,34 @@ The AI powered CLI multitool.
 Use ChatGPT 4 on the command line to create, refactor or process text-based files.
 
 ## Use cases
-- Create code or text files from prompts
-- Convert text-based files to other formats (e.g. JSON to YAML)
-- Refactor code in place
-- Create scripts to build your own tools
-- Rewrite text to sound smarter
-- Query ChatGPT 4 directly
-- Something I haven't thought of...
+- Coming up with the right CLI command to do something, e.g.:
+```bash
+pk "unix command to find all files with the word 'bird' in it"
+```
+- Creating code or text files from prompts, e.g.: 
+```bash
+pk "html file skeleton" > index.html
+```
+- Converting text-based files to other formats, e.g.: 
+```bash
+pk "json to yaml" test.json > test.yaml
+```
+- Refactoring code in place, e.g.: 
+```bash
+pk "collapse to one line" test.json -i
+```
+- Rewriting text to sound smarter, e.g.: 
+```bash
+pk "use more impressive vocabulary" commencement-speech.txt
+```
+- Querying ChatGPT 4 directly, e.g.: 
+```bash
+pk "what does aux do to ps?"
+```
+- Creating scripts to build your own tools (see example below)
+- Something else I haven't thought of yet...
 
-## For example...
+## A more in-depth example...
 `pk` 
 Imagine you have a JSON file you want to convert to YAML. You could download a special tool for it. Or you can use `pk`!
 
