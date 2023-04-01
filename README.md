@@ -38,7 +38,6 @@ Create scripts to build your own tools (see use case example below).
 *Or do something else I haven't thought of yet!*
 
 ## A more in-depth example...
-`pk` 
 Imagine you have a JSON file you want to convert to YAML. You could download a special tool for it. Or you can use `pk`!
 
 Let's say we have a `test.json` file like so:
