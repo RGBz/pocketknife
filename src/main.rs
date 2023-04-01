@@ -8,32 +8,37 @@ use std::io::Write;
 fn main() {
     // Get the command-line arguments
     let args: Vec<String> = std::env::args().collect();
-    if args.len() < 3 || args.len() > 4 {
-        eprintln!("Usage: tweak FILE PROMPT [-i]");
+    if args.len() < 2 || args.len() > 4 {
+        eprintln!("Usage: pk PROMPT [FILE [-i]]");
         std::process::exit(1);
     }
 
-    // Read the file
-    let filename = &args[1];
-    let mut file = File::open(filename).unwrap_or_else(|_| {
-        eprintln!("Error: could not open file '{}'", filename);
-        std::process::exit(1);
-    });
-    let mut contents = String::new();
-    file.read_to_string(&mut contents).unwrap_or_else(|_| {
-        eprintln!("Error: could not read file '{}'", filename);
-        std::process::exit(1);
-    });
-
     // Concatenate the prompt and the file contents
-    let prompt = &args[2];
-    let input = format!("{}:\n\n{}", prompt, contents);
+    let prompt = &args[1];
+    let mut input = format!("{}", prompt);
+
+    // If there's a file argument
+    if args.len() > 3 {
+        // Read the file
+        let filename = &args[2];
+        let mut file = File::open(filename).unwrap_or_else(|_| {
+            eprintln!("Error: could not open file '{}'", filename);
+            std::process::exit(1);
+        });
+        let mut contents = String::new();
+        file.read_to_string(&mut contents).unwrap_or_else(|_| {
+            eprintln!("Error: could not read file '{}'", filename);
+            std::process::exit(1);
+        });
+        input = format!("{}:\n\n{}", prompt, contents);
+    }
 
     // Send the input to the ChatGPT API and print the response to stdout
     let response = chat_gpt_api(input);
 
     // If a -i flag was providded, overwrite the file with the new contents
     if args.len() == 4 && args[3] == "-i" {
+        let filename = &args[2];
         let mut file = File::create(filename).unwrap_or_else(|_| {
             eprintln!("Error: could not open file '{}'", filename);
             std::process::exit(1);
