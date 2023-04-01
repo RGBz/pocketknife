@@ -1,7 +1,13 @@
 # 🤏 tweak
 Process local files using ChatGPT 4.
 
-ChatGPT 4 is an incredibly powerful tool for processing data. `tweak` is a CLI tool to use ChatGPT 4 to execute a prompt against the contents of a local file to do things like generate results or refactor a file in place (using the `-i` flag).
+ChatGPT 4 is an incredibly powerful tool for processing textual data. `tweak` is a CLI tool to use ChatGPT 4 to execute a prompt against the contents of a local text-based file to do things like generate results or refactor a file in place (using the `-i` flag).
+
+## Use cases
+- Convert text-based files to other formats (e.g. JSON to YAML)
+- Refactor code in place
+- Rewrite text to sound smarter
+- Create scripts to build your own tools!
 
 ## How it works
 Imagine you have a `test.json` file...
@@ -60,7 +66,18 @@ Have ChatGPT process a file based on a prompt and send the results to stdout.
 tweak test.yaml "Convert YAML to JSON"
 ```
 
-### 2. Rewrite a file in place
+### 2. Send results to a file
+Have ChatGPT process a file based on a prompt and send the results to another file.
+
+#### Command:
+`tweak SRC_FILE PROMPT > DEST_FILE`
+
+#### Example:
+```bash
+tweak test.yaml "Convert YAML to JSON" > test.json
+```
+
+### 3. Refactor a file in place
 Have ChatGPT process a file based on a prompt and overwrite the file with the result.
 
 **WARNING: Use this flag at your own risk! This is not reversible! Make sure you have another copy of the file or its current state is backed up in version control if you're concerned about losing its contents!**
@@ -71,6 +88,27 @@ Have ChatGPT process a file based on a prompt and overwrite the file with the re
 #### Example:
 ```bash
 tweak -i test.txt "Convert all periods to dollar signs"
+```
+
+### 4. Create a script for a common prompt
+If you have a prompt you find useful but hate retyping, build a script!
+
+#### Example script `yaml2json.sh`:
+```bash
+#!/bin/bash
+
+# Check if FILE parameter is provided
+if [ -z "$1" ]; then
+  echo "Please provide a FILE parameter"
+  exit 1
+fi
+
+# Use the FILE parameter in the tweak command
+tweak "$1" "Convert YAML to JSON"
+```
+Then use it and send stdout to another file:
+```bash
+./yaml2json.sh sample.yaml > sample.json
 ```
 
 ## Troubleshooting
