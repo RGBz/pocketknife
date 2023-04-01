@@ -1,5 +1,5 @@
 # 🇨🇭 pocketknife (`pk`)
-The `pk` command is an AI powered multitool that leverages [ChatGPT 4](https://openai.com/product/gpt-4).
+The `pk` command is an AI powered multitool that leverages OpenAI's [GPT-4](https://openai.com/product/gpt-4).
 
 ## Sample Use Cases
 Come up with the right CLI command to do something, e.g.:
@@ -28,7 +28,7 @@ Rewrite text to sound smarter, e.g.:
 ```bash
 pk "use more impressive vocabulary" commencement-speech.txt
 ```
-Query ChatGPT 4 directly, e.g.: 
+Query GPT-4 4 directly, e.g.: 
 ```bash
 pk "what does aux do to ps?"
 pk "write a song about writing a README"
@@ -76,7 +76,7 @@ The point is, `pk` is an amazingly powerful multitool that you can use for almos
 
 ## Usage Patterns
 
-### 1. Query ChatGPT 4 directly
+### 1. Query GPT-4 directly
 Simply send a prompt from the command line to get a response sent to stdout.
 
 #### Command:
@@ -88,7 +88,7 @@ $ pk "unix command for finding files with the word 'bird' in them"
 grep -r "bird" .
 ```
 ### 2. Create code or text files
-Prompt ChatGPT to create the contents of a file.
+Prompt GPT-4 to create the contents of a file.
 
 #### Command:
 `pk PROMPT > DEST_FILE`
@@ -111,7 +111,7 @@ $ cat index.html
 ```
 
 ### 3. Process a file and output results to stdout
-Have ChatGPT process a file based on a prompt and send the results to stdout.
+Have GPT-4 process a file based on a prompt and send the results to stdout.
 
 #### Command:
 `pk PROMPT FILE`
@@ -133,7 +133,7 @@ $ pk "yaml to json" test.yaml
 ```
 
 ### 4. Process a file and output results to a file
-Have ChatGPT process a file based on a prompt and send the results to another file.
+Have GPT-4 process a file based on a prompt and send the results to another file.
 
 #### Command:
 `pk PROMPT SRC_FILE > DEST_FILE`
@@ -144,7 +144,7 @@ $ pk "yaml to json" test.yaml > test.json
 ```
 
 ### 5. Refactor a file in place
-Have ChatGPT process a file based on a prompt and overwrite the file with the result.
+Have GPT-4 process a file based on a prompt and overwrite the file with the result.
 
 **WARNING: Use this flag at your own risk! This is not reversible! Make sure you have another copy of the file or its current state is backed up in version control if you're concerned about losing its contents!**
 
@@ -188,13 +188,13 @@ $ ./yaml2json.sh sample.yaml > sample.json
 5. Run the `pk` binary using the use cases and examples above for guidance.
 
 ## Limitations & Considerations
-* Any file you list after the prompt will be sent to the ChatGPT API over HTTPS. Do not send files you are not comfortable with sharing with OpenAI.
-* ChatGPT is not good with counting or math in general. Asking it how many bytes are in a file or how many lines, or to run a total in a CSV will likely give inaccurate results.
-* ChatGPT is however great with text and code! You can use `pk` to create a script to sum the results of a CSV and give it the CSV, then run the script.
-* ChatGPT is not perfect! Always review any code it writes before running it and review any output it generates before trusting it. It's a great tool to speed you up, but you need to be the expert.
+* Any file you list after the prompt will be sent to the GPT-4 API over HTTPS. Do not send files you are not comfortable with sharing with OpenAI.
+* GPT-4 is not good with counting or math in general. Asking it how many bytes are in a file or how many lines, or to run a total in a CSV will likely give inaccurate results.
+* GPT-4 is however great with text and code! You can use `pk` to create a script to sum the results of a CSV and give it the CSV, then run the script.
+* GPT-4 is not perfect! Always review any code it writes before running it and review any output it generates before trusting it. It's a great tool to speed you up, but you need to be the expert.
 
 ## Troubleshooting
 If you're getting an error...
 * Make sure you've set your OpenAI API key to the `OPENAI_API_KEY` environment variable.
 * `pk` uses GPT 4, make sure your account has access to it (or get on the waitlist!).
-* Make sure you have an Internet connection! `pk` hits the ChatGPT API directly for each command.
+* Make sure you have an Internet connection! `pk` hits the GPT-4 API directly for each command.
