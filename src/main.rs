@@ -17,6 +17,21 @@ fn main() {
         std::process::exit(1);
     }
 
+    let api_key = std::env::var("OPENAI_API_KEY").unwrap_or_else(|_| {
+        eprintln!("Error: OPENAI_API_KEY environment variable not set");
+        std::process::exit(1);
+    });
+    // load the timeout from the OPENAI_TIMEOUT environment variable or default to 300 seconds
+    let timeout = std::time::Duration::from_secs(
+        std::env::var("OPENAI_TIMEOUT")
+            .unwrap_or_else(|_| "300".to_string())
+            .parse::<u64>()
+            .unwrap_or_else(|_| {
+                eprintln!("Error: could not parse OPENAI_TIMEOUT environment variable");
+                std::process::exit(1);
+            }),
+    );
+
     // The first argument is always the prompt
     let prompt = &args[1];
     let mut input = format!("Please output without extra explanation {}", prompt);
@@ -38,7 +53,7 @@ fn main() {
     }
 
     // Send the input to the ChatGPT API and print the response to stdout
-    let response = chat_gpt_api(input);
+    let response = chat_gpt_api(input, api_key, timeout);
 
     // If a -i flag was provided, overwrite the file with the new contents
     if args.len() == 4 {
@@ -58,14 +73,14 @@ fn main() {
     }
 }
 
-fn chat_gpt_api(content: String) -> String {
+fn chat_gpt_api(content: String, api_key: String, timeout: std::time::Duration) -> String {
     // Send the input to the ChatGPT API using an HTTP POST request
-    let client = reqwest::blocking::Client::new();
-    // get the OpenAI API key from the environment
-    let api_key = std::env::var("OPENAI_API_KEY").unwrap_or_else(|_| {
-        eprintln!("Error: OPENAI_API_KEY environment variable not set");
-        std::process::exit(1);
-    });
+    let client = reqwest::blocking::Client::builder()
+        .timeout(timeout)
+        .build().unwrap_or_else(|_| {
+            eprintln!("Error: could not create HTTP client");
+            std::process::exit(1);
+        });
     let bearer_token = format!("Bearer {}", api_key);
     let response = client
         .post("https://api.openai.com/v1/chat/completions")
