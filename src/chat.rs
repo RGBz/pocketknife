@@ -3,59 +3,66 @@ use std::time::Duration;
 
 use crate::error::AnyError;
 
-const ENDPOINT: &str = "https://api.openai.com/v1/chat/completions";
-
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
-pub struct CompletionUsage {
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
+pub struct Usage {
     pub prompt_tokens: i64,
     pub completion_tokens: i64,
     pub total_tokens: i64,
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
-pub struct CompletionMessage {
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
+pub struct MessageResponse {
     pub role: String,
     pub content: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
-pub struct CompletionChoice {
-    pub message: CompletionMessage,
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
+pub struct Choice {
+    pub message: MessageResponse,
     pub finish_reason: String,
     pub index: i64,
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
-pub struct CompletionSuccessResponse {
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
+pub struct SuccessResponse {
     pub id: Option<String>,
     pub object: String,
     pub created: i64,
     pub model: String,
-    pub usage: CompletionUsage,
-    pub choices: Vec<CompletionChoice>,
+    pub usage: Usage,
+    pub choices: Vec<Choice>,
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
-pub struct CompletionError {
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
+pub struct Error {
     pub message: String,
     pub r#type: String,
     pub param: String,
     pub code: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
-pub struct CompletionErrorResponse {
-    pub error: CompletionError,
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
+pub struct ErrorResponse {
+    pub error: Error,
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
+impl From<ErrorResponse> for String {
+    fn from(value: ErrorResponse) -> Self {
+        format!(
+            "Error: {} {} {} {}",
+            value.error.message, value.error.r#type, value.error.param, value.error.code
+        )
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
 #[serde(untagged)]
-pub enum CompletionResponse {
-    Success(CompletionSuccessResponse),
-    Error(CompletionErrorResponse),
+pub enum Response {
+    Success(SuccessResponse),
+    Error(ErrorResponse),
 }
 
-impl TryFrom<&str> for CompletionResponse {
+impl TryFrom<&str> for Response {
     type Error = serde_json::Error;
 
     fn try_from(value: &str) -> Result<Self, serde_json::Error> {
@@ -63,15 +70,15 @@ impl TryFrom<&str> for CompletionResponse {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
-pub enum CompletionModel {
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
+pub enum Model {
     #[serde(rename = "gpt-3.5-turbo")]
     Gpt3Turbo,
     #[serde(rename = "gpt-4")]
     Gpt4,
 }
 
-impl CompletionModel {
+impl Model {
     pub fn new(model: &str) -> Self {
         match model {
             "gpt-3.5-turbo" => Self::Gpt3Turbo,
@@ -81,13 +88,13 @@ impl CompletionModel {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
-pub struct CompletionMessagePayload {
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
+pub struct MessageRequest {
     pub role: String,
     pub content: String,
 }
 
-impl CompletionMessagePayload {
+impl MessageRequest {
     pub fn new(content: &str) -> Self {
         Self {
             role: "user".to_owned(),
@@ -96,30 +103,30 @@ impl CompletionMessagePayload {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
-pub struct CompletionPayload {
-    pub model: CompletionModel,
-    pub messages: Vec<CompletionMessagePayload>,
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
+pub struct Payload {
+    pub model: Model,
+    pub messages: Vec<MessageRequest>,
 }
 
-impl CompletionPayload {
+impl Payload {
     pub fn new(model: &str, content: &str) -> Self {
         Self {
-            model: CompletionModel::new(model),
-            messages: vec![CompletionMessagePayload::new(content)],
+            model: Model::new(model),
+            messages: vec![MessageRequest::new(content)],
         }
     }
 }
 
-impl TryFrom<&CompletionPayload> for String {
+impl TryFrom<&Payload> for String {
     type Error = serde_json::Error;
 
-    fn try_from(value: &CompletionPayload) -> Result<Self, Self::Error> {
+    fn try_from(value: &Payload) -> Result<Self, Self::Error> {
         serde_json::to_string(value)
     }
 }
 
-pub struct ChatCompletionPostArgs<'a> {
+pub struct Args<'a> {
     pub message: &'a str,
     pub api_key: &'a str,
     pub model_name: &'a str,
@@ -141,14 +148,15 @@ impl From<BearerToken> for String {
     }
 }
 
-pub fn post(args: &ChatCompletionPostArgs) -> Result<String, AnyError> {
-    let builder = reqwest::blocking::Client::builder();
-    let client = builder
-        .timeout(Duration::from_secs(*args.timeout))
-        .build()?;
+const ENDPOINT: &str = "https://api.openai.com/v1/chat/completions";
 
-    let payload = CompletionPayload::new(args.model_name, args.message);
-    let bearer_token: String = BearerToken::new(args.api_key).into();
+pub fn post(args: &Args) -> Result<String, AnyError> {
+    let timeout = Duration::from_secs(*args.timeout);
+    let builder = reqwest::blocking::Client::builder();
+    let client = builder.timeout(timeout).build()?;
+
+    let payload = Payload::new(args.model_name, args.message);
+    let token: String = BearerToken::new(args.api_key).into();
 
     if *args.debug {
         println!("payload: {:?}", payload);
@@ -157,26 +165,20 @@ pub fn post(args: &ChatCompletionPostArgs) -> Result<String, AnyError> {
     let response = client
         .post(ENDPOINT)
         .header("Content-Type", "application/json")
-        .header("Authorization", bearer_token)
+        .header("Authorization", token)
         .json(&payload)
         .send()?;
 
-    let response = response.json::<CompletionResponse>()?;
+    let response = response.json::<Response>()?;
 
     match response {
-        CompletionResponse::Error(CompletionErrorResponse { error }) => {
-            let message = format!(
-                "Error: {} {} {} {}",
-                error.message, error.r#type, error.param, error.code
-            );
-
-            Err(message.into())
+        Response::Error(message) => {
+            let formatted: String = message.into();
+            Err(formatted.into())
         }
-        CompletionResponse::Success(message) => {
-            let choice = message
-                .choices
-                .last()
-                .ok_or("Error: no text found in response from ChatGPT API")?;
+        Response::Success(message) => {
+            let last_choice = message.choices.last();
+            let choice = last_choice.ok_or("Error: no text found in response from ChatGPT API")?;
 
             Ok(choice.message.content.to_owned())
         }
@@ -189,19 +191,16 @@ mod tests {
 
     #[test]
     fn test_completion_payload_new() {
-        let payload = CompletionPayload::new("gpt-4", "Hello world");
+        let payload = Payload::new("gpt-4", "Hello world");
 
-        assert_eq!(payload.model, CompletionModel::Gpt4);
+        assert_eq!(payload.model, Model::Gpt4);
         assert_eq!(payload.messages.len(), 1);
         assert_eq!(payload.messages[0].content, "Hello world");
     }
 
     #[test]
     fn test_completion_model_new() {
-        assert_eq!(CompletionModel::new("gpt-4"), CompletionModel::Gpt4);
-        assert_eq!(
-            CompletionModel::new("gpt-3.5-turbo"),
-            CompletionModel::Gpt3Turbo
-        );
+        assert_eq!(Model::new("gpt-4"), Model::Gpt4);
+        assert_eq!(Model::new("gpt-3.5-turbo"), Model::Gpt3Turbo);
     }
 }

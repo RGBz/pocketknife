@@ -12,7 +12,7 @@ fn main() -> Result<(), AnyError> {
     let cli = cli::Cli::parse();
     let message = cli.get_full_message()?;
 
-    let response = chat::post(&chat::ChatCompletionPostArgs {
+    let response = chat::post(&chat::Args {
         message: &message,
         model_name: &cli.model_name,
         api_key: &cli.api_key,
