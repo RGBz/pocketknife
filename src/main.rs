@@ -12,11 +12,12 @@ fn main() -> Result<(), AnyError> {
     let cli = cli::Cli::parse();
     let message = cli.get_full_message()?;
 
-    // Send the input to the ChatGPT API and print the response to stdout
-    let response = chat::post(chat::ChatCompletionPostArgs {
+    let response = chat::post(&chat::ChatCompletionPostArgs {
         message: &message,
         model_name: &cli.model_name,
         api_key: &cli.api_key,
+        timeout: &cli.timeout,
+        debug: &cli.debug,
     })?;
 
     if let Some(filename) = cli.output {
