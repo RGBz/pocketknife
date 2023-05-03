@@ -4,6 +4,8 @@ use clap::Parser;
 use std::fs::File;
 use std::io::Write;
 
+use crate::error::AnyError;
+
 pub mod chat;
 pub mod cli;
 pub mod error;
