@@ -79,11 +79,11 @@ pub enum Model {
 }
 
 impl Model {
-    pub fn new(model: &str) -> Self {
+    pub fn new(model: &str) -> Result<Self, AnyError> {
         match model {
-            "gpt-3.5-turbo" => Self::Gpt3Turbo,
-            "gpt-4" => Self::Gpt4,
-            _ => panic!("Invalid model"),
+            "gpt-3.5-turbo" => Ok(Self::Gpt3Turbo),
+            "gpt-4" => Ok(Self::Gpt4),
+            _ => Err("Invalid model".into()),
         }
     }
 }
@@ -110,11 +110,11 @@ pub struct Payload {
 }
 
 impl Payload {
-    pub fn new(model: &str, content: &str) -> Self {
-        Self {
-            model: Model::new(model),
+    pub fn new(model: &str, content: &str) -> Result<Self, AnyError> {
+        Ok(Self {
+            model: Model::new(model)?,
             messages: vec![MessageRequest::new(content)],
-        }
+        })
     }
 }
 
@@ -155,7 +155,7 @@ pub fn post(args: &Args) -> Result<String, AnyError> {
     let builder = reqwest::blocking::Client::builder();
     let client = builder.timeout(timeout).build()?;
 
-    let payload = Payload::new(args.model_name, args.message);
+    let payload = Payload::new(args.model_name, args.message)?;
     let token: String = BearerToken::new(args.api_key).into();
 
     if *args.debug {
@@ -190,8 +190,8 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_completion_payload_new() {
-        let payload = Payload::new("gpt-4", "Hello world");
+    fn test_payload_new() {
+        let payload = Payload::new("gpt-4", "Hello world").unwrap();
 
         assert_eq!(payload.model, Model::Gpt4);
         assert_eq!(payload.messages.len(), 1);
@@ -199,8 +199,13 @@ mod tests {
     }
 
     #[test]
-    fn test_completion_model_new() {
-        assert_eq!(Model::new("gpt-4"), Model::Gpt4);
-        assert_eq!(Model::new("gpt-3.5-turbo"), Model::Gpt3Turbo);
+    fn test_model_new_valid_input() {
+        assert_eq!(Model::new("gpt-4").unwrap(), Model::Gpt4);
+        assert_eq!(Model::new("gpt-3.5-turbo").unwrap(), Model::Gpt3Turbo);
+    }
+
+    #[test]
+    fn test_model_new_invalid_input() {
+        assert!(Model::new("not-a-model").is_err());
     }
 }
