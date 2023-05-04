@@ -22,8 +22,8 @@ fn main() -> Result<(), AnyError> {
         debug: &cli.debug,
     })?;
 
-    if let Some(filename) = cli.output {
-        let mut file = File::create(filename)?;
+    if cli.in_place && cli.input.is_some() {
+        let mut file = File::create(cli.input.unwrap())?;
         file.write_all(response.as_bytes())?;
     } else {
         println!("{}", response);
