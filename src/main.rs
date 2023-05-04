@@ -1,14 +1,12 @@
 extern crate serde_json;
 
 use clap::Parser;
-use std::fs::File;
-use std::io::Write;
-
 use crate::error::AnyError;
 
 pub mod chat;
 pub mod cli;
 pub mod error;
+pub mod file;
 
 fn main() -> Result<(), AnyError> {
     let cli = cli::Cli::parse();
@@ -23,8 +21,7 @@ fn main() -> Result<(), AnyError> {
     })?;
 
     if cli.in_place && cli.input.is_some() {
-        let mut file = File::create(cli.input.unwrap())?;
-        file.write_all(response.as_bytes())?;
+        file::write(&cli.input.unwrap(), response.as_bytes())?;
     } else {
         println!("{}", response);
     }

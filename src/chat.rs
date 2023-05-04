@@ -83,7 +83,7 @@ impl Model {
         match model {
             "gpt-3.5-turbo" => Ok(Self::Gpt3Turbo),
             "gpt-4" => Ok(Self::Gpt4),
-            _ => Err("Invalid model".into()),
+            _ => Err("Error: Not a valid model name".into()),
         }
     }
 }
