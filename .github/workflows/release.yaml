@@ -1,0 +1,77 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+        rust: [stable]
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Setup Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: ${{ matrix.rust }}
+        override: true
+
+    - name: Build
+      run: cargo build --release --all-features
+
+    - name: Platform-specific filename
+      id: platform_filename
+      shell: bash
+      run: |
+        case "${{ matrix.os }}" in
+          "ubuntu-latest") echo "::set-output name=filename::my_program-linux" ;;
+          "windows-latest") echo "::set-output name=filename::my_program-windows.exe" ;;
+          "macOS-latest") echo "::set-output name=filename::my_program-macos" ;;
+        esac
+
+    - name: Run Tests
+      run: cargo test --workspace
+
+    - name: Upload binary
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ steps.platform_filename.outputs.filename }}
+        path: target/release/my_program*
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - name: Download Artifacts
+      uses: actions/download-artifact@v2
+      with:
+        path: binaries
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+    - name: Upload Binaries
+      run: |
+        for binary in binaries/*; do
+          echo "Uploading $binary to ${{ steps.create_release.outputs.upload_url }}"
+          curl -H "Content-Type: application/octet-stream" \
+               -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+               --data-binary "@$binary" \
+               "${{ steps.create_release.outputs.upload_url }}?name=$(basename "$binary")"
+        done
