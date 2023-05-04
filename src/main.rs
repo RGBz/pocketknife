@@ -1,117 +1,30 @@
-#[macro_use]
 extern crate serde_json;
-use reqwest;
-use std::fs::File;
-use std::io::Read;
-use std::io::Write;
 
-fn main() {
-    // Get the command-line arguments
-    let args: Vec<String> = std::env::args().collect();
-    if args.len() < 2 || args.len() > 4 {
-        eprintln!("Usage: pk PROMPT [FILE [-i]]");
-        std::process::exit(1);
-    }
-    if args.len() == 4 && args[3] != "-i" {
-        eprintln!("Error: expected -i, got '{}'", &args[3]);
-        std::process::exit(1);
-    }
+use clap::Parser;
+use crate::error::AnyError;
 
-    let api_key = std::env::var("OPENAI_API_KEY").unwrap_or_else(|_| {
-        eprintln!("Error: OPENAI_API_KEY environment variable not set");
-        std::process::exit(1);
-    });
-    // load the timeout from the OPENAI_TIMEOUT environment variable or default to 300 seconds
-    let timeout = std::time::Duration::from_secs(
-        std::env::var("OPENAI_TIMEOUT")
-            .unwrap_or_else(|_| "300".to_string())
-            .parse::<u64>()
-            .unwrap_or_else(|_| {
-                eprintln!("Error: could not parse OPENAI_TIMEOUT environment variable");
-                std::process::exit(1);
-            }),
-    );
+pub mod chat;
+pub mod cli;
+pub mod error;
+pub mod file;
 
-    // The first argument is always the prompt
-    let prompt = &args[1];
-    let mut input = format!("Please output without extra explanation {}", prompt);
+fn main() -> Result<(), AnyError> {
+    let cli = cli::Cli::parse();
+    let message = cli.get_full_message()?;
 
-    // If there's a file argument, update the input
-    if args.len() > 2 {
-        // Read the file
-        let filename = &args[2];
-        let mut file = File::open(filename).unwrap_or_else(|_| {
-            eprintln!("Error: could not open file '{}'", filename);
-            std::process::exit(1);
-        });
-        let mut contents = String::new();
-        file.read_to_string(&mut contents).unwrap_or_else(|_| {
-            eprintln!("Error: could not read file '{}'", filename);
-            std::process::exit(1);
-        });
-        input = format!("{}:\n\n{}", prompt, contents);
-    }
+    let response = chat::post(&chat::Args {
+        message: &message,
+        model_name: &cli.model_name,
+        api_key: &cli.api_key,
+        timeout: &cli.timeout,
+        debug: &cli.debug,
+    })?;
 
-    // Send the input to the ChatGPT API and print the response to stdout
-    let response = chat_gpt_api(input, api_key, timeout);
-
-    // If a -i flag was provided, overwrite the file with the new contents
-    if args.len() == 4 {
-        let filename = &args[2];
-        let mut file = File::create(filename).unwrap_or_else(|_| {
-            eprintln!("Error: could not open file '{}'", filename);
-            std::process::exit(1);
-        });
-        file.write_all(response.as_bytes()).unwrap_or_else(|_| {
-            eprintln!("Error: could not write to file '{}'", filename);
-            std::process::exit(1);
-        });
-    }
-    // otherwise print the response to stdout
-    else {
+    if cli.in_place && cli.input.is_some() {
+        file::write(&cli.input.unwrap(), response.as_bytes())?;
+    } else {
         println!("{}", response);
     }
-}
 
-fn chat_gpt_api(content: String, api_key: String, timeout: std::time::Duration) -> String {
-    // Send the input to the ChatGPT API using an HTTP POST request
-    let client = reqwest::blocking::Client::builder()
-        .timeout(timeout)
-        .build().unwrap_or_else(|_| {
-            eprintln!("Error: could not create HTTP client");
-            std::process::exit(1);
-        });
-    let bearer_token = format!("Bearer {}", api_key);
-    let response = client
-        .post("https://api.openai.com/v1/chat/completions")
-        .header("Content-Type", "application/json")
-        .header("Authorization", bearer_token)
-        .json(&json!({
-            "model": "gpt-4",
-            "messages": [
-                {
-                    "role": "user",
-                    "content": content
-                }
-            ]
-        }))
-        .send()
-        .unwrap_or_else(|error| {
-            eprintln!("Error: could not send request to ChatGPT API\n  {}", error);
-            std::process::exit(1);
-        });
-
-    // Parse the response as JSON and extract the generated text
-    let response_json: serde_json::Value = response.json().unwrap_or_else(|_| {
-        eprintln!("Error: could not parse response from ChatGPT API");
-        std::process::exit(1);
-    });
-    let choices = &response_json["choices"];
-    let text = choices[0]["message"]["content"].as_str().unwrap_or_else(|| {
-        eprintln!("Error: no text found in response from ChatGPT API");
-        std::process::exit(1);
-    });
-
-    // Return the generated text
-    String::from(text.trim())
+    Ok(())
 }
