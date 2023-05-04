@@ -153,7 +153,10 @@ const ENDPOINT: &str = "https://api.openai.com/v1/chat/completions";
 pub fn post(args: &Args) -> Result<String, AnyError> {
     let timeout = Duration::from_secs(*args.timeout);
     let builder = reqwest::blocking::Client::builder();
-    let client = builder.timeout(timeout).build()?;
+    let client = builder
+        .timeout(timeout)
+        .build()
+        .map_err(|_| "Error: could not create HTTP client")?;
 
     let payload = Payload::new(args.model_name, args.message)?;
     let token: String = BearerToken::new(args.api_key).into();
@@ -167,9 +170,12 @@ pub fn post(args: &Args) -> Result<String, AnyError> {
         .header("Content-Type", "application/json")
         .header("Authorization", token)
         .json(&payload)
-        .send()?;
+        .send()
+        .map_err(|error| format!("Error: could not send request to ChatGPT API\n  {}", error))?;
 
-    let response = response.json::<Response>()?;
+    let response = response
+        .json::<Response>()
+        .map_err(|_| "Error: could not parse response from ChatGPT API")?;
 
     match response {
         Response::Error(message) => {
@@ -180,7 +186,7 @@ pub fn post(args: &Args) -> Result<String, AnyError> {
             let last_choice = message.choices.last();
             let choice = last_choice.ok_or("Error: no text found in response from ChatGPT API")?;
 
-            Ok(choice.message.content.to_owned())
+            Ok(choice.message.content.trim().to_owned())
         }
     }
 }
