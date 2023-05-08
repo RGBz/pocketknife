@@ -5,22 +5,16 @@ use crate::error::AnyError;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub struct Usage {
-    pub prompt_tokens: i64,
-    pub completion_tokens: i64,
-    pub total_tokens: i64,
-}
-
-#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
-pub struct MessageResponse {
-    pub role: String,
-    pub content: String,
+    pub prompt_tokens: i32,
+    pub completion_tokens: i32,
+    pub total_tokens: i32,
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub struct Choice {
-    pub message: MessageResponse,
+    pub message: Message,
     pub finish_reason: String,
-    pub index: i64,
+    pub index: usize,
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
@@ -89,12 +83,12 @@ impl Model {
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
-pub struct MessageRequest {
+pub struct Message {
     pub role: String,
     pub content: String,
 }
 
-impl MessageRequest {
+impl Message {
     pub fn new(content: &str) -> Self {
         Self {
             role: "user".to_owned(),
@@ -106,14 +100,14 @@ impl MessageRequest {
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub struct Payload {
     pub model: Model,
-    pub messages: Vec<MessageRequest>,
+    pub messages: Vec<Message>,
 }
 
 impl Payload {
     pub fn new(model: &str, content: &str) -> Result<Self, AnyError> {
         Ok(Self {
             model: Model::new(model)?,
-            messages: vec![MessageRequest::new(content)],
+            messages: vec![Message::new(content)],
         })
     }
 }
