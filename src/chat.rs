@@ -43,7 +43,7 @@ pub struct ErrorResponse {
 impl From<ErrorResponse> for String {
     fn from(value: ErrorResponse) -> Self {
         format!(
-            "Error: {} {} {} {}",
+            "{} {} {} {}",
             value.error.message, value.error.r#type, value.error.param, value.error.code
         )
     }
@@ -77,7 +77,7 @@ impl Model {
         match model {
             "gpt-3.5-turbo" => Ok(Self::Gpt3Turbo),
             "gpt-4" => Ok(Self::Gpt4),
-            _ => Err("Error: Not a valid model name".into()),
+            _ => Err("Not a valid model name".into()),
         }
     }
 }
@@ -150,7 +150,7 @@ pub fn post(args: &Args) -> Result<String, AnyError> {
     let client = builder
         .timeout(timeout)
         .build()
-        .map_err(|_| "Error: could not create HTTP client")?;
+        .map_err(|_| "Could not create HTTP client")?;
 
     let payload = Payload::new(args.model_name, args.message)?;
     let token: String = BearerToken::new(args.api_key).into();
@@ -165,11 +165,11 @@ pub fn post(args: &Args) -> Result<String, AnyError> {
         .header("Authorization", token)
         .json(&payload)
         .send()
-        .map_err(|error| format!("Error: could not send request to ChatGPT API\n  {}", error))?;
+        .map_err(|error| format!("Could not send request to ChatGPT API\n  {}", error))?;
 
     let response = response
         .json::<Response>()
-        .map_err(|_| "Error: could not parse response from ChatGPT API")?;
+        .map_err(|_| "Could not parse response from ChatGPT API")?;
 
     match response {
         Response::Error(message) => {
@@ -178,7 +178,7 @@ pub fn post(args: &Args) -> Result<String, AnyError> {
         }
         Response::Success(message) => {
             let last_choice = message.choices.last();
-            let choice = last_choice.ok_or("Error: no text found in response from ChatGPT API")?;
+            let choice = last_choice.ok_or("No text found in response from ChatGPT API")?;
 
             Ok(choice.message.content.trim().to_owned())
         }
