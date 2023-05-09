@@ -1,7 +1,7 @@
 extern crate serde_json;
 
-use clap::Parser;
 use crate::error::AnyError;
+use clap::Parser;
 
 pub mod chat;
 pub mod cli;
@@ -20,11 +20,15 @@ fn main() -> Result<(), AnyError> {
         debug: &cli.debug,
     })?;
 
-    if cli.in_place && cli.input.is_some() {
-        file::write(&cli.input.unwrap(), response.as_bytes())?;
-    } else {
+    if !cli.in_place && cli.input.is_none() {
         println!("{}", response);
+        return Ok(());
     }
 
-    Ok(())
+    if cli.in_place && cli.input.is_some() {
+        file::write(&cli.input.unwrap(), response.as_bytes())?;
+        return Ok(());
+    }
+
+    Err("Cannot use --in-place without file input".into())
 }
