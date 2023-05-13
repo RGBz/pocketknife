@@ -20,15 +20,16 @@ fn main() -> Result<(), AnyError> {
         debug: &cli.debug,
     })?;
 
-    if !cli.in_place && cli.input.is_none() {
-        println!("{}", response);
-        return Ok(());
+    if cli.in_place {
+        return match cli.input {
+            None => Err("Cannot use --in-place without file input".into()),
+            Some(input) => {
+                file::write(&input, response.as_bytes())?;
+                Ok(())
+            }
+        };
     }
 
-    if cli.in_place && cli.input.is_some() {
-        file::write(&cli.input.unwrap(), response.as_bytes())?;
-        return Ok(());
-    }
-
-    Err("Cannot use --in-place without file input".into())
+    println!("{}", response);
+    Ok(())
 }
