@@ -70,6 +70,8 @@ pub enum Model {
     Gpt3Turbo,
     #[serde(rename = "gpt-4")]
     Gpt4,
+    #[serde(rename = "gpt-4-1106-preview")]
+    Gpt41106Preview,
 }
 
 impl Model {
@@ -77,6 +79,7 @@ impl Model {
         match model {
             "gpt-3.5-turbo" => Ok(Self::Gpt3Turbo),
             "gpt-4" => Ok(Self::Gpt4),
+            "gpt-4-1106-preview" => Ok(Self::Gpt41106Preview),
             _ => Err("Not a valid model name".into()),
         }
     }

@@ -32,9 +32,9 @@ jobs:
       shell: bash
       run: |
         case "${{ matrix.os }}" in
-          "ubuntu-latest") echo "::set-output name=filename::my_program-linux" ;;
-          "windows-latest") echo "::set-output name=filename::my_program-windows.exe" ;;
-          "macOS-latest") echo "::set-output name=filename::my_program-macos" ;;
+          "ubuntu-latest") echo "::set-output name=filename::pk-linux" ;;
+          "windows-latest") echo "::set-output name=filename::pk-windows.exe" ;;
+          "macOS-latest") echo "::set-output name=filename::pk-macos" ;;
         esac
 
     - name: Run Tests
@@ -44,7 +44,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: ${{ steps.platform_filename.outputs.filename }}
-        path: target/release/my_program*
+        path: target/release/pk*
 
   release:
     runs-on: ubuntu-latest
